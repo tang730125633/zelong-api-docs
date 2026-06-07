@@ -15,20 +15,22 @@
 
 | 模型 ID | 类型 | 说明 |
 |------|------|------|
-| `gpt-5.5` | 文本 | GPT 最新 |
-| `gpt-5.4` | 文本 | GPT 主力 |
-| `gpt-5.4-high` | 文本 | GPT 高精度 |
-| `gpt-5.4-mini` | 文本 | GPT 轻量快速 |
-| `claude-opus-4-7` | 文本 | Claude 最强 |
-| `claude-opus-4-6` | 文本 | Claude |
-| `claude-sonnet-4-6` | 文本 | Claude 均衡 |
-| `claude-sonnet-4-6-thinking` | 文本 | Claude 深度思考 |
-| `claude-sonnet-4-5` | 文本 | Claude |
-| `claude-sonnet-4-5-thinking` | 文本 | Claude 思考 |
-| `claude-haiku-4-5` | 文本 | Claude 极速 |
-| `claude-haiku-4-5-thinking` | 文本 | Claude 极速思考 |
-| `gpt-image-2` | 🖼️ 图片 | 文生图 + 图片编辑 |
-| `grok-video` | 🎬 视频 | 文生视频 + 图生视频 |
+| `gpt-5.5` | 文本 | GPT 最新 | — |
+| `gpt-5.4` | 文本 | GPT 主力 | ✅ 稳定 |
+| `gpt-5.4-high` | 文本 | GPT 高精度 | — |
+| `gpt-5.4-mini` | 文本 | GPT 轻量快速 | ✅ 稳定 |
+| `claude-opus-4-7` | 文本 | Claude 最强 | ✅ 稳定 |
+| `claude-opus-4-6` | 文本 | Claude | ✅ 稳定 |
+| `claude-sonnet-4-6` | 文本 | Claude 均衡 | ✅ 稳定 |
+| `claude-sonnet-4-6-thinking` | 文本 | Claude 深度思考 | ❌ 不可用 |
+| `claude-sonnet-4-5` | 文本 | Claude | ❌ 不可用 |
+| `claude-sonnet-4-5-thinking` | 文本 | Claude 思考 | ❌ 不可用 |
+| `claude-haiku-4-5` | 文本 | Claude 极速 | ✅ 稳定 |
+| `claude-haiku-4-5-thinking` | 文本 | Claude 极速思考 | ❌ 不可用 |
+| `gpt-image-2` | 🖼️ 图片 | 文生图 + 图片编辑 | ✅ 稳定 |
+| `grok-video` | 🎬 视频 | 文生视频 + 图生视频 | ✅ 稳定 |
+
+> ✅ = 实测通过 · ❌ = 不可用 · — = 未测试
 
 ---
 
@@ -96,7 +98,7 @@ client = Anthropic(
 )
 
 msg = client.messages.create(
-    model="claude-sonnet-4-6",
+    model="claude-haiku-4-5",
     max_tokens=1024,
     messages=[{"role": "user", "content": "你好"}],
 )
@@ -165,7 +167,7 @@ r = requests.post(
     "https://api.zelong.vip/v1/image/created",
     headers={"Authorization": "Bearer sk-your-api-key"},
     json={"model": "gpt-image-2", "prompt": "一只猫"},
-    timeout=120,
+    timeout=180,
 )
 b64 = r.json()["data"][0]["b64_json"]
 with open("output.png", "wb") as f:
@@ -193,7 +195,7 @@ print("✅ 图片已保存")
 
 - **不要传** `size`、`quality`、`style` 等 OpenAI 标准参数，会导致报错
 - 返回永远是 base64 编码，需自行解码保存为 PNG
-- 费用：0.5 图片积分/张
+- 费用：1.0 图片积分/张（1K 分辨率）
 
 ### 返回格式
 
@@ -211,7 +213,7 @@ print("✅ 图片已保存")
     "image_count": 1,
     "image_size": "1K",
     "billing_type": "image_credit",
-    "image_credits_charged": 0.5
+    "image_credits_charged": 1.0
   }
 }
 ```
@@ -441,11 +443,17 @@ curl -L https://api.zelong.vip/v1/videos/video_xxx/content \
 
 Python 需禁用代理：
 ```python
-import os
+import os, requests
 os.environ.pop('HTTP_PROXY', None)
 os.environ.pop('HTTPS_PROXY', None)
 
-requests.post(url, ..., proxies={"http": None, "https": None})
+# 方式一（推荐）：禁用 trust_env
+session = requests.Session()
+session.trust_env = False
+r = session.post(url, ..., timeout=180)
+
+# 方式二：手动设空代理
+r = requests.post(url, ..., proxies={"http": None, "https": None}, timeout=180)
 ```
 
 ### 客户端配置
@@ -483,6 +491,9 @@ Base URL: https://api.zelong.vip/v1
 | `INVALID_IMAGE_FILE` | 图片编辑缺文件 | image 必须 multipart 上传 |
 | `VIDEO_MODEL_NOT_FOUND` | 视频模型未配置 | 确认传了 model=grok-video |
 | `MODEL_NOT_FOUND` | 模型不存在 | 查 /v1/models 确认可用模型 |
+| `UPSTREAM_INVALID_REQUEST` | 上游渠道参数不兼容 | 换模型或参数；Claude thinking 系列暂不可用 |
+| `NO_CHANNEL` | 该参数组合无可用渠道 | 换 image_size 或不传该参数 |
+| `VIDEO_GENERATION_FAILED` | 视频渠道临时异常 | 稍后重试 |
 
 ---
 
@@ -495,4 +506,4 @@ Base URL: https://api.zelong.vip/v1
 ---
 
 > 🍂 最后更新：2026-06-07 · 全部端点实测通过
-> 小秋 · Agent 协作系统
+> 实测：小秋 · 反馈：小婷 · Agent 协作系统
