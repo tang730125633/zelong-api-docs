@@ -1,7 +1,34 @@
 # 泽龙AI 中转站 API 完整手册
 
 > 一站式 AI 模型调用服务，支持文本对话、图片生成、图片编辑、视频生成。
-> Base URL: `https://api.zelong.vip`
+
+## 🔑 配置信息
+
+| 配置项 | 值 |
+|--------|-----|
+| **Base URL** | `https://api.zelong.vip/v1` |
+| **API Key** | `sk-57f98031c2c2b0da97f8c9930d73d6d552ec578ca849035b` |
+
+---
+
+## 📋 当前可用模型（14个）
+
+| 模型 ID | 类型 | 说明 |
+|------|------|------|
+| `gpt-5.5` | 文本 | GPT 最新 |
+| `gpt-5.4` | 文本 | GPT 主力 |
+| `gpt-5.4-high` | 文本 | GPT 高精度 |
+| `gpt-5.4-mini` | 文本 | GPT 轻量快速 |
+| `claude-opus-4-7` | 文本 | Claude 最强 |
+| `claude-opus-4-6` | 文本 | Claude |
+| `claude-sonnet-4-6` | 文本 | Claude 均衡 |
+| `claude-sonnet-4-6-thinking` | 文本 | Claude 深度思考 |
+| `claude-sonnet-4-5` | 文本 | Claude |
+| `claude-sonnet-4-5-thinking` | 文本 | Claude 思考 |
+| `claude-haiku-4-5` | 文本 | Claude 极速 |
+| `claude-haiku-4-5-thinking` | 文本 | Claude 极速思考 |
+| `gpt-image-2` | 🖼️ 图片 | 文生图 + 图片编辑 |
+| `grok-video` | 🎬 视频 | 文生视频 + 图生视频 |
 
 ---
 
