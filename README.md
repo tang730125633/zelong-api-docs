@@ -7,7 +7,7 @@
 | 配置项 | 值 |
 |--------|-----|
 | **Base URL** | `https://api.zelong.vip/v1` |
-| **API Key** | `sk-57f98031c2c2b0da97f8c9930d73d6d552ec578ca849035b` |
+| **API Key** | `` |
 
 ---
 
